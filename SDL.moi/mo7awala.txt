@@ -1,0 +1,142 @@
+//Oui ou Non supprimer:
+void OuiNonSupprimer(int mouseX ,int mouseY )
+{
+	SDL_Rect imageRect;
+    imageRect.x = 60;
+    imageRect.y = 80;
+    SDL_Surface* zone = NULL;
+    zone = IMG_Load("7.png");
+    SDL_BlitSurface(zone, NULL, screen, &imageRect);
+    SDL_Rect textMessage = { 125, 250, 300, 50 };
+    SDL_Color textColor = { 255, 0, 0 };
+    //position de button Oui:
+	const int INTERVAL_MIN_XO = 182;
+	const int INTERVAL_MAX_XO = 395;
+	const int INTERVAL_MIN_YO = 506;
+	const int INTERVAL_MAX_YO = 567;
+	//position de button Non:
+    const int INTERVAL_MIN_XN = 358;
+	const int INTERVAL_MAX_XN = 560;
+	const int INTERVAL_MIN_YN = 106;
+	const int INTERVAL_MAX_YN = 178;
+	std::string inputText1;
+    std::string referenceInput;
+    if(mouseX >= INTERVAL_MIN_XO && mouseX <= INTERVAL_MAX_XO && mouseY >= INTERVAL_MIN_YO && mouseY <= INTERVAL_MAX_YO)
+	{
+        referenceInput = inputText1;
+	    bool produitExiste = false; 								
+	    produitExiste = true; 
+	    const char * reference = new char[50];
+		reference = referenceInput.c_str();                              
+		bool p = s.supprimerProduit(reference);
+		if(p){
+		inputText1 = inputText1.substr(0, inputText1.length() - 1);
+		SDL_FillRect(screen, &textMessage, SDL_MapRGB(screen->format, 124,129,135));
+	    SDL_Surface* messageSurface = TTF_RenderText_Solid(font, "Produit Supprim?", textColor);
+	    SDL_BlitSurface(messageSurface, NULL, screen, &textMessage);
+	    SDL_FreeSurface(messageSurface);
+	     
+		}
+		else{
+		SDL_Rect textMessage = { 100, 250, 300, 50 };
+	    SDL_Surface* messageSurface = TTF_RenderText_Solid(font, "Produit n'exist pas ", textColor);
+	    SDL_BlitSurface(messageSurface, NULL, screen, &textMessage);
+	    SDL_FreeSurface(messageSurface);
+		}
+	}
+    else if (mouseX >= INTERVAL_MIN_XN && mouseX <= INTERVAL_MAX_XN && mouseY >= INTERVAL_MIN_YN && mouseY <= INTERVAL_MAX_YN)
+    { 
+			       
+    }
+}
+
+//Supprimer produit :
+void Supprimer()
+{
+	SDL_Init(SDL_INIT_VIDEO);
+    SDL_Surface* screen = SDL_SetVideoMode(600, 600, 32, SDL_SWSURFACE);
+    TTF_Init();
+    SDL_EnableUNICODE(1);
+    TTF_Font* font = TTF_OpenFont("arial.ttf", 50);
+    SDL_Color textColor = { 255, 0, 0 };
+    SDL_Rect textField1 = { 90, 110, 200, 30 };
+    SDL_Rect textMessage = { 125, 250, 300, 50 };
+    SDL_Surface* textSurface1 = TTF_RenderText_Solid(font, "Champ 1 :", textColor);
+    SDL_Event event;
+    bool quit = false;
+    std::string inputText1;
+    bool activeField1 = true;
+    SDL_Surface* background = NULL;
+    background = IMG_Load("5.png");
+    SDL_BlitSurface(background, NULL, screen, NULL);
+    SDL_Flip(screen);
+    //position de button quitter:
+	const int INTERVAL_MIN_X = 182;
+	const int INTERVAL_MAX_X = 395;
+	const int INTERVAL_MIN_Y = 506;
+	const int INTERVAL_MAX_Y = 567;
+	//position de button recherche:
+    const int INTERVAL_MIN_Xs = 358;
+	const int INTERVAL_MAX_Xs = 560;
+	const int INTERVAL_MIN_Ys = 106;
+	const int INTERVAL_MAX_Ys = 178;
+    std::string referenceInput;
+    while (!quit) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                quit = true;
+            }
+            else if (event.type == SDL_MOUSEBUTTONDOWN)
+            {
+                if (event.button.button == SDL_BUTTON_LEFT)
+                {
+                    int mouseX = event.button.x;
+                    int mouseY = event.button.y;
+			        //coordonnes(mouseX,mouseY);
+                    if (mouseX >= INTERVAL_MIN_X && mouseX <= INTERVAL_MAX_X && mouseY >= INTERVAL_MIN_Y && mouseY <= INTERVAL_MAX_Y)
+                    {
+                        return;
+                    }
+                    else if (mouseX >= INTERVAL_MIN_Xs && mouseX <= INTERVAL_MAX_Xs && mouseY >= INTERVAL_MIN_Ys && mouseY <= INTERVAL_MAX_Ys)
+                    { 
+						OuiNonSupprimer(int mouseX ,int mouseY);		       
+                    }                       
+                        //inputText1 = "";
+                }                
+            }          
+            else if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    quit = true;
+                }
+                else if (event.key.keysym.sym == SDLK_TAB) {
+                    activeField1 = !activeField1;
+                }
+                else if (event.key.keysym.sym == SDLK_RETURN) {
+                    if (activeField1) {
+                        activeField1 = false;
+                    }
+                }
+                else if (event.key.keysym.sym == SDLK_BACKSPACE) {
+					    if (activeField1 && !inputText1.empty()) {					    						       
+					        inputText1 = inputText1.substr(0, inputText1.length() - 1);
+					        SDL_FillRect(screen, &textField1, SDL_MapRGB(screen->format, 124,129,135));         
+					    }
+					}
+                else {
+                    if (activeField1) {
+                        char inputChar = event.key.keysym.unicode;
+                        if (isprint(inputChar) || inputChar == ' ') {
+                            inputText1 += inputChar;
+                        }
+                    }
+                }
+            }
+        }
+        if (activeField1) {
+            SDL_Surface* inputSurface = TTF_RenderText_Solid(font, inputText1.c_str(), textColor);
+            SDL_BlitSurface(inputSurface, NULL, screen, &textField1);
+            SDL_FreeSurface(inputSurface);
+        }
+        SDL_Flip(screen);
+    }   
+}
